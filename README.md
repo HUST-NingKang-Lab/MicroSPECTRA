@@ -13,7 +13,6 @@ MicroSPECTRA scripts are developed under **Python 3.9+**.
 
 ### Option 1: Create a conda environment (recommended)
 
-```bash
 conda create -n microspectra python=3.10 -y
 pip install -r requirements.txt
 
