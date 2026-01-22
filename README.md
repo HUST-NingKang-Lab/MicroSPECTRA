@@ -27,9 +27,6 @@ pip install -r requirements.txt
 pip install -r requirements.txt
 ```
 
-> If you do not have `requirements.txt` yet, typical dependencies include:
-> `numpy`, `pandas`, `scipy`, `scikit-learn`, `matplotlib`, `umap-learn`, `networkx`.
-
 ---
 
 ## Data
@@ -168,18 +165,6 @@ python spectral_fingerprints.py \
 
 ---
 
-## Outputs
-
-Outputs are written under `results/` by default (or under `--out_dir`).
-
-Typical outputs include:
-- `spectra/`: power spectra, dominant timescales, band power fractions  
-- `hf_ratio.csv`: HF ratio time series (local anomaly score)  
-- `generator/`: synthetic trajectories + embedding plots + metrics  
-- `delay_network/`: edge list with predicted delays (days)  
-- `fingerprints/`: per-subject spectral fingerprints + cohort summaries  
-
----
 
 
 ## Maintainers
