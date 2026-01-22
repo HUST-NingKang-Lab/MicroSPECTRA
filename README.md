@@ -5,7 +5,7 @@ It represents longitudinal microbiome profiles as multivariate time signals and 
 2) spectral editing / synthetic trajectory generation in frequency space,
 3) phase-delay microbe–metabolite networks to infer lagged associations,
 4) baseline spectral fingerprints to quantify inter-individual dynamical phenotypes.
-<img width="1496" height="1197" alt="image" src="https://github.com/user-attachments/assets/a3e314da-b0a6-4fff-824d-1aa512ce8f85" />
+<img width="1122" height="900" alt="image" src="https://github.com/user-attachments/assets/f11b4bda-bcdc-4c03-94d2-b9d3cc181e2b" />
 
 ---
 
