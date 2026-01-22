@@ -79,7 +79,11 @@ time,taurochenodeoxycholic_acid,17_hydroxyprogesterone
 ### 1) Sliding-window Fourier spectra + HF ratio
 
 ```bash
-python 01_compute_spectra_and_hf.py   --subject S01   --microbiome_file data/microbiome/abundance1.csv   --out_dir results/S01/
+python hf_ratio_anomaly.py single \
+  --input data/abundance1.csv \
+  --time-col time \
+  --window "70-122" \
+  --out-dir results/anomaly
 ```
 
 ### 2) Fast/slow taxa stratification
