@@ -86,34 +86,71 @@ python hf_ratio_anomaly.py single \
   --out-dir results/anomaly
 ```
 
-### 2) Fast/slow taxa stratification
+### 2) Fourier generator
 
 ```bash
-python 02_fast_slow_taxa.py   --subject S01   --microbiome_file data/microbiome/abundance1.csv   --out_dir results/S01/
+python fourier_ts_generate.py \
+  --input data/abundance1.csv \
+  --output results/fourier_synth.csv \
+  --eval \
+  --metrics-out results/fourier_metrics.json \
+  --umap-out results/fourier_umap_time_match \
+  --umap-n-neighbors 15 \
+  --umap-min-dist 0.1
+
+Key generator knobs:
+- `--amp-jitter`: amplitude perturbation strength
+- `--p-modify`: fraction of frequency bins to modify
+- `--keep-k`: only modify bins within [1, keep_k)
+
+python ts_generation_benchmark.py \
+  --input data/abundance1.csv \
+  --output-dir results/benchmark
+
+Methods included:
+- `clr_jitter_repeat_by_time`
+- `dirichlet_global`
+- `pca_gaussian_softmax`
+- `knn_mixup`
 ```
 
-### 3) Spectral generator
+### 3)  Phase-delay microbe–metabolite network (S29–S34)
 
 ```bash
-python 03_spectral_generator.py   --subject S01   --microbiome_file data/microbiome/abundance1.csv   --out_dir results/S01/generator/   --n_samples 500   --seed 0
+python phase_delay_network.py \
+  --microbe-csv data/genus.csv \
+  --metabolite-csv data/metabolite.csv \
+  --out-dir results/lag_network \
+  --time-col time \
+  --band-periods "7:0.5" \
+  --nperseg 8 \
+  --overlap 0.5 \
+  --n-perm 200 \
+  --phase-r-min 0.30 \
+  --xcorr-min-peak 0.15 \
+  --q-threshold 0.10
 ```
 
-### 4) Compare generators (benchmark)
+### 4) Spectral fingerprints & susceptibility
 
 ```bash
-python 04_benchmark_generators.py   --microbiome_dir data/microbiome/   --subjects S01,S02,S03   --out_dir results/generator_benchmark/   --seed 0
-```
+# 1) Susceptibility: spectral change magnitude
+python spectral_susceptibility.py \
+  --root-dir data \
+  --out-dir results/susceptibility \
+  --time-col time \
+  --baseline-day 14 \
+  --top-g 20
 
-### 5) Phase-delay microbe–metabolite network (S29–S34)
+# 2) Spectral fingerprints: distance + shannon + pre/post stats
+python spectral_fingerprints.py \
+  --root-dir data \
+  --out-dir results/fingerprints \
+  --time-col time \
+  --baseline-day 14 \
+  --top-g 15 \
+  --window-len 5
 
-```bash
-python 05_delay_network.py   --subject S29   --microbiome_file data/microbiome/abundance29.csv   --metabolome_file data/metabolome/metabolites29.csv   --out_dir results/S29/delay_network/
-```
-
-### 6) Spectral fingerprints & susceptibility
-
-```bash
-python 06_fingerprint_analysis.py   --microbiome_dir data/microbiome/   --subjects S29,S30,S31,S32,S33,S34   --out_dir results/fingerprints/
 ```
 
 ---
@@ -122,12 +159,12 @@ python 06_fingerprint_analysis.py   --microbiome_dir data/microbiome/   --subjec
 
 | Script | Purpose | Main outputs |
 |---|---|---|
-| `01_compute_spectra_and_hf.py` | Sliding-window Fourier spectra + HF ratio | spectra, HF ratio series |
-| `02_fast_slow_taxa.py` | Fast/slow stratification | fast/slow/intermediate labels |
-| `03_spectral_generator.py` | Spectral editing generator | synthetic trajectories + plots |
-| `04_benchmark_generators.py` | Compare generators | UMAP plots, ACC metrics |
-| `05_delay_network.py` | Phase-delay networks | directed edges with delays |
-| `06_fingerprint_analysis.py` | Spectral fingerprints & susceptibility | fingerprint vectors, cohort stats |
+| `hf_ratio_anomaly.py` | Sliding-window Fourier HF ratio anomaly scoring (single table or meta list) :contentReference[oaicite:0]{index=0} | `hf_anomaly_single_summary.csv` / `hf_anomaly_all_tables_summary.csv`, per-table `per_table/*_hf_anomaly_metrics.csv` |
+| `fourier_ts_generate.py` | Fourier-based time-series generator (optional evaluation: metrics + UMAP time-match) :contentReference[oaicite:1]{index=1} | synthetic CSV (`--output`), `*_metrics.json`, `*_umap_time_match.png/.pdf` |
+| `ts_generation_benchmark.py` | Generator benchmark (kept: `clr_jitter_repeat_by_time`, `dirichlet_global`, `pca_gaussian_softmax`, `knn_mixup`) with metrics + UMAP time-match :contentReference[oaicite:2]{index=2} | per-method: `*_synth.csv`, `*_metrics.json`, `*_umap_time_match.png/.pdf`; summary: `summary_metrics.csv`, `summary_metrics.json` |
+| `phase_delay_network.py` | Phase-delay network inference (STFT/CSD + permutation tests + BH-FDR) :contentReference[oaicite:3]{index=3} | `all_results.csv`, `best_per_pair.csv`, `edges_q<=*.csv` |
+| `spectral_susceptibility.py` | Spectral susceptibility via pre/post spectral feature shift magnitude :contentReference[oaicite:4]{index=4} | `spectral_change_magnitude_table.csv`, `spectral_change_magnitude.png/.pdf` |
+| `spectral_fingerprints.py` | Spectral fingerprints distance (to pre reference) + Shannon index; pre/post stats with BH-FDR :contentReference[oaicite:5]{index=5} | per-subject `*_spectral_distance.png/.pdf`, `*_shannon_index.png/.pdf`; cohort `pre_post_significance_stats.csv` |
 
 ---
 
